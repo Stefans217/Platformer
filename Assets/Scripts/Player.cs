@@ -1,18 +1,25 @@
+using System;
 using Unity.Cinemachine;
 using UnityEngine;
 
 public class Player : MonoBehaviour
 {
     [SerializeField] private InputManager inputManager;
-    [SerializeField] private float speed;
+    [SerializeField] private float maxSpeed;
+    [SerializeField] private float acceleration;
+    [SerializeField] private float friction;
+    [SerializeField] private float jumpForce;
     [SerializeField] private CinemachineCamera freeLookCamera;
-
+    [SerializeField] private LayerMask groundLayer;
 
     private Rigidbody rb;
+    private bool isGrounded;
+    private int jumpCount = 0;
     
     private void Start()
     {
         inputManager.OnMove.AddListener(MovePlayer);
+        inputManager.OnSpacePressed.AddListener(Jump);
         rb = GetComponent<Rigidbody>();
     }
 
@@ -32,6 +39,47 @@ public class Player : MonoBehaviour
         camRight.Normalize();
 
         Vector3 moveDirection = camForward * direction.y + camRight * direction.x;
-        rb.AddForce(speed * moveDirection);
+
+
+        //apply acceleration and max speed constraint to horizontal axis (preserve gravity)
+        Vector3 horizontalVelocity = new Vector3(rb.linearVelocity.x, 0, rb.linearVelocity.z);
+        Vector3 targetVelocity = moveDirection * maxSpeed;
+        Vector3 velocityChange = targetVelocity - horizontalVelocity;
+
+        velocityChange = Vector3.ClampMagnitude(velocityChange, acceleration * Time.deltaTime);
+        rb.AddForce(velocityChange, ForceMode.VelocityChange);
+
+        if (direction.magnitude < 0.1f)
+        {
+            rb.linearVelocity = new Vector3(
+                Mathf.Lerp(rb.linearVelocity.x, 0, friction * Time.deltaTime),
+                rb.linearVelocity.y, //keep gravity constant
+                Mathf.Lerp(rb.linearVelocity.z, 0, friction * Time.deltaTime)
+            );
+        }
     }
+
+    private void Jump()
+    {
+        Debug.Log("jump function called");
+        if (isGrounded || jumpCount < 2)
+        {
+            Debug.Log("Jumped");
+            jumpCount++;
+            rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
+            isGrounded = false;
+        }
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        if ((groundLayer & (1 << collision.gameObject.layer)) != 0)
+        {
+            Debug.Log("grounded");
+            jumpCount = 0;
+            isGrounded = true;
+        }
+    }
+
+
 }

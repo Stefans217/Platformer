@@ -12,17 +12,6 @@ public class GameManager : MonoBehaviour
     private GameObject pinObjects;
 
 
-    private void Start()
-    {
-        // Adding the HandleReset function as a listener to our
-        // newly added OnResetPressedEvent
-        inputManager.OnResetPressed.AddListener(HandleReset);
-    }
-
-    private void HandleReset()
-    {
-
-    }
 
     
     
