@@ -7,6 +7,7 @@ public class InputManager : MonoBehaviour
 
     public UnityEvent<Vector2> OnMove = new UnityEvent<Vector2>();
     public UnityEvent OnSpacePressed = new UnityEvent();
+    public UnityEvent OnShiftPressed = new UnityEvent();
 
     void Update()
     {
@@ -15,6 +16,10 @@ public class InputManager : MonoBehaviour
             OnSpacePressed?.Invoke();
         }
 
+        if (Input.GetKeyDown(KeyCode.LeftShift))
+        {
+            OnShiftPressed?.Invoke();
+        }
 
         Vector2 input = Vector2.zero;
         if (Input.GetKey(KeyCode.W))

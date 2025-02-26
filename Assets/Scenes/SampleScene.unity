@@ -1761,6 +1761,9 @@ MonoBehaviour:
   groundLayer:
     serializedVersion: 2
     m_Bits: 64
+  dashForce: 40
+  dashDuration: 1
+  dashCooldown: 1
 --- !u!114 &1651813562
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2147,6 +2150,9 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   OnSpacePressed:
+    m_PersistentCalls:
+      m_Calls: []
+  OnShiftPressed:
     m_PersistentCalls:
       m_Calls: []
 --- !u!114 &2104924215

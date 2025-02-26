@@ -25,7 +25,7 @@ public class GameManager : MonoBehaviour
     private void IncrementScore()
     {
         score++;
-        scoreText.text = $"Score: {score}";
+        scoreText.text = $"Coins: {score}";
     }
 
 }

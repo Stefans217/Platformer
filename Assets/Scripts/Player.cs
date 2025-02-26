@@ -12,17 +12,22 @@ public class Player : MonoBehaviour
     [SerializeField] private float jumpForce;
     [SerializeField] private CinemachineCamera freeLookCamera;
     [SerializeField] private LayerMask groundLayer;
-
+    [SerializeField] private float dashForce;
+    [SerializeField] private float dashDuration;
+    [SerializeField] private float dashCooldown;
+    
     private Rigidbody rb;
     private bool isGrounded;
     private int jumpCount = 0;
     private float defaultAcceleration;
+    private bool canDash = true;
 
 
     private void Start()
     {
         inputManager.OnMove.AddListener(MovePlayer);
         inputManager.OnSpacePressed.AddListener(Jump);
+        inputManager.OnShiftPressed.AddListener(Dash);
         rb = GetComponent<Rigidbody>();
         defaultAcceleration = acceleration;
     }
@@ -60,11 +65,41 @@ public class Player : MonoBehaviour
         {
             rb.linearVelocity = new Vector3(
                 Mathf.Lerp(rb.linearVelocity.x, 0, friction * Time.deltaTime),
-                rb.linearVelocity.y, //keep gravity constant
+                rb.linearVelocity.y, //gravity stays constant
                 Mathf.Lerp(rb.linearVelocity.z, 0, friction * Time.deltaTime)
             );
         }
     }
+
+    private void Dash()
+    {
+        Debug.Log("Dash function called");
+
+        if (!canDash)
+        {
+            Debug.Log("Dash cooldown. Cannot dash");
+            return;
+        }
+
+        Vector3 dashDirection = transform.forward;
+        
+        rb.AddForce(dashDirection * dashForce, ForceMode.VelocityChange);
+
+        Invoke(nameof(ResetDash), dashDuration);
+    }
+
+    private void ResetDash()
+    {
+        rb.linearVelocity = new Vector3(0, rb.linearVelocity.y, 0);
+        Invoke(nameof(EnableDash), dashCooldown);
+    }
+
+    private void EnableDash()
+    {
+        canDash = true;
+    }
+
+
 
     private void Jump()
     {
