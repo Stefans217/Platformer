@@ -38,6 +38,8 @@ public class Player : MonoBehaviour
         transform.rotation = Quaternion.Euler(0, transform.rotation.eulerAngles.y, 0);
     }
 
+
+    // movement ---
     private void MovePlayer(Vector2 direction)
     {
         //when character is not grounded, apply airAccelerationMultiplier to slow down in-air movement (increases difficulty).
@@ -70,7 +72,8 @@ public class Player : MonoBehaviour
             );
         }
     }
-
+   
+    // dash functionality ---
     private void Dash()
     {
         Debug.Log("Dash function called");
@@ -84,6 +87,8 @@ public class Player : MonoBehaviour
         Vector3 dashDirection = transform.forward;
         
         rb.AddForce(dashDirection * dashForce, ForceMode.VelocityChange);
+
+        canDash = false;
 
         Invoke(nameof(ResetDash), dashDuration);
     }
@@ -99,7 +104,7 @@ public class Player : MonoBehaviour
         canDash = true;
     }
 
-
+    //jump functionality ---
 
     private void Jump()
     {
