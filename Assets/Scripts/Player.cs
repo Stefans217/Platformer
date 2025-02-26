@@ -7,6 +7,7 @@ public class Player : MonoBehaviour
     [SerializeField] private InputManager inputManager;
     [SerializeField] private float maxSpeed;
     [SerializeField] private float acceleration;
+    [SerializeField] private float airAccelerationMultiplier;
     [SerializeField] private float friction;
     [SerializeField] private float jumpForce;
     [SerializeField] private CinemachineCamera freeLookCamera;
@@ -15,12 +16,15 @@ public class Player : MonoBehaviour
     private Rigidbody rb;
     private bool isGrounded;
     private int jumpCount = 0;
-    
+    private float defaultAcceleration;
+
+
     private void Start()
     {
         inputManager.OnMove.AddListener(MovePlayer);
         inputManager.OnSpacePressed.AddListener(Jump);
         rb = GetComponent<Rigidbody>();
+        defaultAcceleration = acceleration;
     }
 
     private void Update()
@@ -31,6 +35,9 @@ public class Player : MonoBehaviour
 
     private void MovePlayer(Vector2 direction)
     {
+        //when character is not grounded, apply airAccelerationMultiplier to slow down in-air movement (increases difficulty).
+        float currentAcceleration = isGrounded ? defaultAcceleration : defaultAcceleration * airAccelerationMultiplier;
+
         Vector3 camForward = freeLookCamera.transform.forward;
         Vector3 camRight = freeLookCamera.transform.right;
         camForward.y = 0f;
@@ -41,12 +48,12 @@ public class Player : MonoBehaviour
         Vector3 moveDirection = camForward * direction.y + camRight * direction.x;
 
 
-        //apply acceleration and max speed constraint to horizontal axis (preserve gravity)
+        //apply current acceleration and max speed constraint to horizontal axis (preserve gravity)
         Vector3 horizontalVelocity = new Vector3(rb.linearVelocity.x, 0, rb.linearVelocity.z);
         Vector3 targetVelocity = moveDirection * maxSpeed;
         Vector3 velocityChange = targetVelocity - horizontalVelocity;
 
-        velocityChange = Vector3.ClampMagnitude(velocityChange, acceleration * Time.deltaTime);
+        velocityChange = Vector3.ClampMagnitude(velocityChange, currentAcceleration * Time.deltaTime);
         rb.AddForce(velocityChange, ForceMode.VelocityChange);
 
         if (direction.magnitude < 0.1f)
@@ -78,6 +85,15 @@ public class Player : MonoBehaviour
             Debug.Log("grounded");
             jumpCount = 0;
             isGrounded = true;
+        }
+    }
+
+    private void OnCollisionExit(Collision collision)
+    {
+        if (groundLayer != 0)
+        {
+            Debug.Log("in air");
+            isGrounded = false;
         }
     }
 
