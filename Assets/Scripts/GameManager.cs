@@ -7,14 +7,20 @@ public class GameManager : MonoBehaviour
     [SerializeField] private float score = 0;
     [SerializeField] private TextMeshProUGUI scoreText;
     [SerializeField] private InputManager inputManager;
-
-    
-    private GameObject pinObjects;
+    [SerializeField] private GameObject coinCollection;
 
 
+    private GameObject coinList;
+    private CoinCollector coinCollector;
 
-    
-    
+    private void Awake()
+    {
+        coinCollector = FindFirstObjectByType<CoinCollector>();
+        if (coinCollector != null)
+        {
+            coinCollector.OnCoinCollected.AddListener(IncrementScore);
+        }
+    }
 
     private void IncrementScore()
     {
