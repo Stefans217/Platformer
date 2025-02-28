@@ -1,4 +1,4 @@
-# COSC 416 Studio Assignment 2
+# COSC 416 Studio Assignment 3
 ### Stefan Spataro 56862295
 Note: The walls are sticky so the character can cling to them and bounce off!
 
