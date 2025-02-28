@@ -12,7 +12,7 @@
 
 Note: The walls are sticky so the character can cling to them and bounce off! There is an attribution for the character model in `ATTRIBUTIONS.txt` in the models folder
 
+https://github.com/user-attachments/assets/8fd46578-5980-4d65-9dab-91515763622d
 
 
-https://github.com/user-attachments/assets/ec3b582e-e193-4ca3-9258-930c93954e89
 
